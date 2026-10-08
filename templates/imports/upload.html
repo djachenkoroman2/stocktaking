@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Загрузка анкет{% endblock %}
+{% block content %}
+<h1 class="h3">Загрузка анкет</h1>
+<form method="post" enctype="multipart/form-data" class="col-lg-7">{% csrf_token %}
+  {% include 'includes/form_fields.html' %}
+  <button class="btn btn-primary">Загрузить</button>
+</form>
+<div class="mt-4 small-muted col-lg-7">
+  <p>Принимаются заполненные PDF-формы «Информация о студенте (курсанте)» версии 2.0 и ZIP-архивы с ними.
+  Ограничения: файл до {{ settings_max_file|default:'10' }} МБ, до 200 файлов в пакете.</p>
+  <p>Анкеты с ошибками не сохраняются, а готовятся к возврату преподавателю с текстом, что исправить.
+  Остальные открываются в предпросмотре: там выбирается статус работы, преподаватель и студент.</p>
+</div>
+{% endblock %}

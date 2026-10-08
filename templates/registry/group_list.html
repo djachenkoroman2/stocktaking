@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Группы{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-2"><h1 class="h3">Группы</h1>
+  {% if access.can_edit %}<a class="btn btn-primary" href="{% url 'group_create' %}">Добавить</a>{% endif %}</div>
+<form class="row g-2 mb-3"><div class="col-md-3"><input name="q" value="{{ q }}" class="form-control" placeholder="Шифр"></div><div class="col-auto"><button class="btn btn-outline-primary">Найти</button></div></form>
+<table class="table table-sm"><thead><tr><th>Шифр</th><th>Кафедра</th><th>Студентов</th><th></th></tr></thead><tbody>
+{% for g in page %}<tr{% if not g.is_active %} class="text-secondary"{% endif %}><td>{{ g.code }}</td><td>{{ g.department|default:'' }}</td><td>{{ g.students_count }}</td>
+<td>{% if access.can_edit %}<a href="{% url 'group_edit' g.pk %}">изменить</a>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="4">Групп нет.</td></tr>{% endfor %}</tbody></table>
+{% include 'includes/pagination.html' %}
+{% endblock %}

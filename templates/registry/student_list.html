@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Студенты{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-2"><h1 class="h3">Студенты (курсанты)</h1>
+  {% if access.can_create_students %}<a class="btn btn-primary" href="{% url 'student_create' %}">Добавить</a>{% endif %}</div>
+<form class="row g-2 mb-3">
+  <div class="col-md-4"><input name="q" value="{{ q }}" class="form-control" placeholder="ФИО или группа{% if access.can_see_any_contacts %}, телефон, email{% endif %}"></div>
+  <div class="col-md-1"><select name="course" class="form-select"><option value="">Курс</option>
+    {% for c in '123456' %}<option{% if filters.course == c %} selected{% endif %}>{{ c }}</option>{% endfor %}</select></div>
+  <div class="col-md-2 form-check pt-2"><input type="checkbox" class="form-check-input" name="inactive" value="1" id="inactive"{% if filters.inactive == '1' %} checked{% endif %}> <label for="inactive" class="form-check-label">и неактивные</label></div>
+  <div class="col-md-1"><button class="btn btn-outline-primary">Найти</button></div>
+</form>
+<table class="table table-sm table-hover"><thead><tr><th>ФИО</th><th>Группа</th><th>Курс</th><th>Категория</th></tr></thead><tbody>
+{% for s in page %}<tr{% if not s.is_active %} class="text-secondary"{% endif %}><td><a href="{% url 'student_detail' s.pk %}">{{ s.full_name }}</a></td><td>{{ s.group }}</td><td>{{ s.course|default:'' }}</td><td>{{ s.get_category_display }}</td></tr>
+{% empty %}<tr><td colspan="4">Ничего не найдено.</td></tr>{% endfor %}</tbody></table>
+{% include 'includes/pagination.html' %}
+{% endblock %}

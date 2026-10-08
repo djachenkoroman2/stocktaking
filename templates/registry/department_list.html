@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Кафедры{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-2"><h1 class="h3">Кафедры</h1>
+  {% if access.is_admin %}<a class="btn btn-primary" href="{% url 'department_create' %}">Добавить</a>{% endif %}</div>
+<table class="table table-sm"><thead><tr><th>Название</th><th>Краткое</th><th>Другие написания</th><th>Преподавателей</th><th></th></tr></thead><tbody>
+{% for d in departments %}<tr{% if not d.is_active %} class="text-secondary"{% endif %}><td>{{ d.name }}</td><td>{{ d.short_name }}</td><td class="small">{{ d.aliases|join:'; ' }}</td><td>{{ d.teachers_count }}</td>
+<td>{% if access.can_edit %}<a href="{% url 'department_edit' d.pk %}">изменить</a>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="5">Кафедр нет.</td></tr>{% endfor %}</tbody></table>
+{% endblock %}

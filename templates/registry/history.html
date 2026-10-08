@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}История: {{ obj }}{% endblock %}
+{% block content %}
+<h1 class="h3">История: {{ obj }}</h1>
+<p><a href="{% if kind == 'work' %}{% url 'work_detail' obj.pk %}{% elif kind == 'student' %}{% url 'student_detail' obj.pk %}{% else %}{% url 'teacher_detail' obj.pk %}{% endif %}">← назад</a></p>
+<table class="table table-sm"><thead><tr><th>Когда</th><th>Кто</th><th>Что</th><th>Источник</th><th>Изменения</th></tr></thead><tbody>
+{% for e in entries %}<tr><td class="text-nowrap">{{ e.date|date:'d.m.Y H:i' }}</td><td>{{ e.user|default:'' }}</td><td>{{ e.type }}</td><td>{{ e.reason }}</td>
+<td>{% for label, old, new in e.changes %}<div><strong>{{ label }}:</strong> <span class="diff-old pre-wrap">{{ old|default_if_none:''|truncatechars:300 }}</span> → <span class="diff-new pre-wrap">{{ new|default_if_none:''|truncatechars:300 }}</span></div>{% endfor %}</td></tr>
+{% empty %}<tr><td colspan="5">Изменений нет.</td></tr>{% endfor %}</tbody></table>
+{% endblock %}

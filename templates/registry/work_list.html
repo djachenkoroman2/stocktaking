@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Работы{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <h1 class="h3">{% if show_deleted %}Удалённые работы{% else %}Работы{% endif %}</h1>
+  <div>{% if access.can_edit %}<a class="btn btn-primary" href="{% url 'work_create' %}">Новая работа</a>{% endif %}
+  {% if access.is_admin %}<a class="btn btn-outline-secondary" href="?deleted={% if show_deleted %}0{% else %}1{% endif %}">{% if show_deleted %}Действующие{% else %}Удалённые{% endif %}</a>{% endif %}</div>
+</div>
+<form class="row g-2 mb-3">
+  {% if show_deleted %}<input type="hidden" name="deleted" value="1">{% endif %}
+  <div class="col-md-3"><input name="q" value="{{ filters.q }}" class="form-control" placeholder="Поиск: ФИО, группа, задача"></div>
+  <div class="col-md-2"><select name="department" class="form-select"><option value="">Все кафедры</option>
+    {% for d in departments %}<option value="{{ d.id }}"{% if filters.department == d.id|stringformat:'s' %} selected{% endif %}>{{ d }}</option>{% endfor %}</select></div>
+  <div class="col-md-2"><select name="teacher" class="form-select"><option value="">Все преподаватели</option>
+    {% for t in teachers %}<option value="{{ t.id }}"{% if filters.teacher == t.id|stringformat:'s' %} selected{% endif %}>{{ t.short_name }}</option>{% endfor %}</select></div>
+  <div class="col-md-1"><select name="course" class="form-select"><option value="">Курс</option>
+    {% for c in '123456' %}<option{% if filters.course == c %} selected{% endif %}>{{ c }}</option>{% endfor %}</select></div>
+  <div class="col-md-1"><select name="group" class="form-select"><option value="">Группа</option>
+    {% for g in groups %}<option value="{{ g.id }}"{% if filters.group == g.id|stringformat:'s' %} selected{% endif %}>{{ g }}</option>{% endfor %}</select></div>
+  <div class="col-md-1"><select name="status" class="form-select"><option value="">Статус</option>
+    {% for v, l in statuses %}<option value="{{ v }}"{% if filters.status == v %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+  <div class="col-md-1"><select name="year" class="form-select"><option value="">Уч. год</option>
+    {% for y in years %}<option{% if filters.year == y %} selected{% endif %}>{{ y }}</option>{% endfor %}</select></div>
+  <div class="col-md-1"><button class="btn btn-outline-primary w-100">Найти</button></div>
+</form>
+<div class="table-responsive"><table class="table table-hover table-sm">
+  <thead><tr><th>Студент</th><th>Группа</th><th>Курс</th><th>Преподаватель</th><th>Тема</th><th>Статус</th><th>Уч. год</th></tr></thead>
+  <tbody>{% for w in page %}<tr>
+    <td><a href="{% url 'work_detail' w.pk %}">{{ w.student.full_name }}</a></td><td>{{ w.student.group }}</td>
+    <td>{{ w.student.course|default:'' }}</td><td>{{ w.teacher.short_name }}</td><td>{{ w.title|truncatechars:80 }}</td>
+    <td>{{ w.get_status_display }}</td><td>{{ w.academic_year }}</td></tr>
+  {% empty %}<tr><td colspan="7">Ничего не найдено.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% include 'includes/pagination.html' %}
+{% endblock %}

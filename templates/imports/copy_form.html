@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Подготовка копий{% endblock %}
+{% block content %}
+<h1 class="h3">Подготовка копий формы</h1>
+{% if not template %}<div class="alert alert-warning">Шаблон формы не загружен. Его загружает администратор.</div>{% endif %}
+{% if replaces %}<div class="alert alert-info">Копия готовится взамен возвращённой анкеты «{{ replaces.original_name }}»{% if replaces.student_name %} ({{ replaces.student_name }}){% endif %}.</div>{% endif %}
+<p class="small-muted">В каждую копию записывается уникальный ID анкеты и данные преподавателя: ФИО, должность, кафедра.</p>
+<form method="post" class="col-lg-6">{% csrf_token %}{% include 'includes/form_fields.html' %}<button class="btn btn-primary">Подготовить</button></form>
+{% endblock %}

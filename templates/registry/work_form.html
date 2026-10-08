@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}{% if work %}Изменение работы{% else %}Новая работа{% endif %}{% endblock %}
+{% block content %}
+<h1 class="h3">{% if work %}Изменение работы: {{ work }}{% else %}Новая работа{% endif %}</h1>
+<form method="post" class="col-xl-9">{% csrf_token %}
+  {% include 'includes/form_fields.html' %}
+  {% if access.can_create_students %}<p class="small"><a href="{% url 'student_create' %}?next={{ request.path|urlencode }}">Создать студента</a>, если его нет в списке.</p>{% endif %}
+  <h2 class="h5 mt-4">Достижения</h2>
+  {{ formset.management_form }}
+  {% for f in formset %}
+  <div class="row g-2 align-items-start mb-2 border-bottom pb-2">
+    {% for h in f.hidden_fields %}{{ h }}{% endfor %}
+    <div class="col-md-9">{{ f.text }}{% for e in f.text.errors %}<div class="invalid-feedback d-block">{{ e }}</div>{% endfor %}</div>
+    <div class="col-md-1">{{ f.order }}</div>
+    <div class="col-md-2 form-check">{% if f.instance.pk %}{{ f.DELETE }} <label class="form-check-label">удалить</label>{% endif %}</div>
+  </div>
+  {% endfor %}
+  <button class="btn btn-primary">Сохранить</button>
+  <a class="btn btn-link" href="{% if work %}{% url 'work_detail' work.pk %}{% else %}{% url 'work_list' %}{% endif %}">Отмена</a>
+</form>
+{% endblock %}

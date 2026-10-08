@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Журнал импорта{% endblock %}
+{% block content %}
+<h1 class="h3">Журнал импорта</h1>
+<form class="row g-2 mb-3">
+  <div class="col-md-3"><input name="q" value="{{ filters.q }}" class="form-control" placeholder="Файл, ID анкеты, ФИО"></div>
+  <div class="col-md-3"><select name="state" class="form-select"><option value="">Все состояния</option>
+    {% for v, l in states %}<option value="{{ v }}"{% if filters.state == v %} selected{% endif %}>{{ l }}{% if v == 'returned' %} (без повторной){% endif %}</option>{% endfor %}</select></div>
+  <div class="col-md-2"><input type="date" name="date_from" value="{{ filters.date_from }}" class="form-control"></div>
+  <div class="col-md-2"><input type="date" name="date_to" value="{{ filters.date_to }}" class="form-control"></div>
+  <div class="col-md-1"><button class="btn btn-outline-primary">Найти</button></div>
+</form>
+<div class="table-responsive"><table class="table table-sm table-hover"><thead><tr><th>Загружено</th><th>Автор</th><th>Файл</th><th>ID анкеты</th><th>Студент</th><th>Состояние</th><th>Работа</th></tr></thead><tbody>
+{% for d in page %}<tr><td class="text-nowrap">{{ d.uploaded_at|date:'d.m.Y H:i' }}</td><td>{{ d.uploaded_by|default:'' }}</td>
+<td><a href="{% url 'document_detail' d.pk %}">{{ d.original_name }}</a></td><td class="small">{{ d.questionnaire_id }}</td><td>{{ d.student_name }}</td>
+<td>{{ d.get_state_display }}</td><td>{% if d.work_id %}<a href="{% url 'work_detail' d.work_id %}">открыть</a>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="7">Загрузок нет.</td></tr>{% endfor %}</tbody></table></div>
+{% include 'includes/pagination.html' %}
+{% endblock %}

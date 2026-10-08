@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}Копии подготовлены{% endblock %}
+{% block content %}
+<h1 class="h3">Копии подготовлены</h1>
+<p><a class="btn btn-primary" href="{% url 'copy_download_zip' %}?ids={{ ids }}">Скачать все ZIP-архивом</a></p>
+<ul>{% for c in copies %}<li><a href="{% url 'copy_download' c.pk %}">{{ c.download_name }}</a>{% if c.student %} — {{ c.student }}{% endif %}</li>{% endfor %}</ul>
+<p><a href="{% url 'copy_list' %}">Все выданные копии</a></p>
+{% endblock %}

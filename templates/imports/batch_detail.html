@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ batch }}{% endblock %}
+{% block content %}
+<h1 class="h3">{{ batch }}</h1>
+<p class="text-secondary">Загрузил: {{ batch.created_by|default:'' }}.
+{% for state, n in counts.items %}{% if state == 'ready' %}Готово: {{ n }}{% else %}{% for value, label in states.choices %}{% if value == state %}{{ label }}: {{ n }}{% endif %}{% endfor %}{% endif %}{% if not forloop.last %} · {% endif %}{% endfor %}</p>
+{% if queued %}<div class="alert alert-info">Часть файлов ещё обрабатывается. Страница обновится автоматически.</div>{% endif %}
+<div class="d-flex flex-wrap gap-2 mb-3">
+  {% if ready_count %}<form method="post" action="{% url 'batch_save_ready' batch.pk %}">{% csrf_token %}
+    <button class="btn btn-success" title="Новые работы получат статус «В работе», обновляемые сохранят текущий">Сохранить все готовые ({{ ready_count }})</button></form>{% endif %}
+  <a class="btn btn-outline-secondary" href="{% url 'batch_return_texts' batch.pk %}">Тексты возврата (.txt)</a>
+  {% if to_return_count %}<form method="post" action="{% url 'batch_mark_returned' batch.pk %}" onsubmit="return confirm('Отметить все анкеты «К возврату» как переданные преподавателям?')">{% csrf_token %}
+    <button class="btn btn-outline-warning">Отметить все как возвращённые ({{ to_return_count }})</button></form>{% endif %}
+</div>
+<div class="table-responsive"><table class="table table-sm table-hover">
+  <thead><tr><th>Файл</th><th>Студент по анкете</th><th>Преподаватель по анкете</th><th>Состояние</th><th>Ошибки и предупреждения</th></tr></thead>
+  <tbody>{% for d, ready in rows %}<tr>
+    <td><a href="{% url 'document_detail' d.pk %}">{{ d.original_name }}</a></td><td>{{ d.student_name }}</td><td>{{ d.teacher_name }}</td>
+    <td>{% if ready %}<span class="badge text-bg-success">Готово</span>{% elif d.state == 'pending' %}<span class="badge text-bg-primary">Ожидает решения</span>{% elif d.state == 'saved' %}<span class="badge text-bg-secondary">Сохранено</span>{% elif d.state == 'to_return' or d.state == 'returned' %}<span class="badge text-bg-warning">{{ d.get_state_display }}</span>{% else %}<span class="badge text-bg-danger">{{ d.get_state_display }}</span>{% endif %}</td>
+    <td class="small">{% for e in d.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}{% for w in d.warnings %}<div class="text-warning-emphasis">{{ w }}</div>{% endfor %}</td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}
+{% block scripts %}{% if queued %}<script>setTimeout(function () { location.reload(); }, 5000);</script>{% endif %}{% endblock %}

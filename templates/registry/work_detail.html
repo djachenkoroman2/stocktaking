@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}{{ work }}{% endblock %}
+{% block content %}
+{% if work.is_deleted %}<div class="alert alert-danger">Работа удалена {{ work.deleted_at|date:'d.m.Y H:i' }}.
+  {% if access.is_admin %}<form method="post" action="{% url 'work_restore' work.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-success">Восстановить</button></form>
+  <form method="post" action="{% url 'work_purge' work.pk %}" class="d-inline" onsubmit="return confirm('Удалить работу и её загрузки безвозвратно?')">{% csrf_token %}<button class="btn btn-sm btn-danger">Удалить безвозвратно</button></form>{% endif %}
+</div>{% endif %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+  <div><h1 class="h3 mb-0">{{ work.student.full_name }}</h1>
+    <div class="text-secondary">Руководитель: <a href="{% url 'teacher_detail' work.teacher.pk %}">{{ work.teacher.full_name }}</a>, {{ work.teacher.department }}</div></div>
+  <div class="d-flex gap-2">
+    {% if can_edit and not work.is_deleted %}
+    <a class="btn btn-outline-primary" href="{% url 'work_edit' work.pk %}">Изменить</a>
+    <a class="btn btn-outline-secondary" href="{% url 'import_upload' %}">Загрузить новую версию анкеты</a>
+    <a class="btn btn-outline-secondary" href="{% url 'copy_create' %}?teacher={{ work.teacher.pk }}&student={{ work.student.pk }}">Подготовить копию</a>
+    <form method="post" action="{% url 'work_delete' work.pk %}" onsubmit="return confirm('Удалить работу?')">{% csrf_token %}<button class="btn btn-outline-danger">Удалить</button></form>
+    {% endif %}
+    <a class="btn btn-link" href="{% url 'history' 'work' work.pk %}">История</a>
+  </div>
+</div>
+<div class="row g-4">
+<div class="col-lg-8">
+<table class="table">
+  <tr><th class="field-label">Статус</th><td><strong>{{ work.get_status_display }}</strong>{% if work.status_comment %}<div class="small-muted">{{ work.status_comment }}</div>{% endif %}</td></tr>
+  <tr><th class="field-label">Студент</th><td><a href="{% url 'student_detail' work.student.pk %}">{{ work.student.full_name }}</a>, группа {{ work.student.group }}{% if work.student.course %}, {{ work.student.course }} курс{% endif %}
+    {% if show_contacts %}<div class="small">Тел.: {{ work.student.phone }} · {{ work.student.email }}</div>{% endif %}</td></tr>
+  <tr><th class="field-label">Задача</th><td class="pre-wrap">{{ work.task }}</td></tr>
+  <tr><th class="field-label">Расписание</th><td class="pre-wrap">{{ work.schedule|default:'—' }}</td></tr>
+  <tr><th class="field-label">Ожидаемые результаты</th><td class="pre-wrap">{{ work.expected_results|default:'—' }}</td></tr>
+  <tr><th class="field-label">Примечание</th><td class="pre-wrap">{{ work.notes|default:'—' }}</td></tr>
+  <tr><th class="field-label">Дата заполнения анкеты</th><td>{{ work.date_filled|date:'d.m.Y'|default:'—' }}</td></tr>
+  <tr><th class="field-label">Учебный год</th><td>{{ work.academic_year }}</td></tr>
+  <tr><th class="field-label">Курс по анкете</th><td>{{ work.course_at_filling|default:'—' }}</td></tr>
+  <tr><th class="field-label">ID анкеты</th><td>{{ work.questionnaire_id|default:'—' }}</td></tr>
+  <tr><th class="field-label">Источник</th><td>{{ work.get_source_display }}</td></tr>
+</table>
+<h2 class="h5">Достижения ({{ achievements|length }})</h2>
+<ol>{% for a in achievements %}<li class="pre-wrap">{{ a.text }}{% if a.source_row %} <span class="small-muted">(строка {{ a.source_row }})</span>{% endif %}</li>{% empty %}<li class="list-unstyled">Нет.</li>{% endfor %}</ol>
+</div>
+<div class="col-lg-4">
+  {% if status_form and transitions and not work.is_deleted %}
+  <div class="card mb-3"><div class="card-body">
+    <h2 class="h6">Сменить статус</h2>
+    <form method="post" action="{% url 'work_status' work.pk %}">{% csrf_token %}{% include 'includes/form_fields.html' with form=status_form %}
+      <button class="btn btn-sm btn-primary">Сменить</button></form>
+  </div></div>
+  {% endif %}
+  {% if documents %}
+  <div class="card mb-3"><div class="card-body"><h2 class="h6">Загрузки анкеты</h2>
+    <ul class="list-unstyled small mb-0">{% for d in documents %}
+      <li><a href="{% url 'document_detail' d.pk %}">{{ d.uploaded_at|date:'d.m.Y' }} — {{ d.original_name }}</a> · {{ d.get_state_display }}</li>{% endfor %}</ul>
+  </div></div>
+  {% endif %}
+  {% if copies %}
+  <div class="card"><div class="card-body"><h2 class="h6">Выданные копии</h2>
+    <ul class="list-unstyled small mb-0">{% for c in copies %}<li><a href="{% url 'copy_download' c.pk %}">{{ c.download_name }}</a> · {{ c.issued_at|date:'d.m.Y' }}</li>{% endfor %}</ul>
+  </div></div>
+  {% endif %}
+</div>
+</div>
+{% endblock %}

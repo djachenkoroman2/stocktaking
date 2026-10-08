@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}Отчёты{% endblock %}
+{% block content %}
+<h1 class="h3">Отчёты</h1>
+<div class="list-group col-lg-7">{% for r in reports %}
+  <a class="list-group-item list-group-item-action" href="{% url 'report' r.slug %}">{{ r.number }}. {{ r.title }}
+    <span class="small-muted float-end">{{ r.formats|join:', '|upper }}</span></a>{% endfor %}</div>
+{% endblock %}

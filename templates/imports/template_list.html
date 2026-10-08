@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Шаблон формы{% endblock %}
+{% block content %}
+<h1 class="h3">Шаблон формы</h1>
+<p>Пустая форма <code>prepod_vnok_info</code>, из которой готовятся копии с ID анкеты. Копию с уже назначенным ID загрузить нельзя.</p>
+<form method="post" enctype="multipart/form-data" class="col-lg-6 mb-4">{% csrf_token %}{% include 'includes/form_fields.html' %}<button class="btn btn-primary">Загрузить</button></form>
+<table class="table table-sm"><thead><tr><th>Файл</th><th>Форма</th><th>SHA-256</th><th>Загружен</th><th>Копий</th><th></th></tr></thead><tbody>
+{% for t in templates %}<tr><td>{{ t.original_name }}</td><td>{{ t.form_id }} {{ t.schema_version }}</td><td class="small"><code>{{ t.sha256|truncatechars:20 }}</code></td>
+<td>{{ t.uploaded_at|date:'d.m.Y' }} {{ t.uploaded_by|default:'' }}</td><td>{{ t.copies_count }}</td>
+<td>{% if t.is_current %}<span class="badge text-bg-success">текущий</span>{% else %}<form method="post" action="{% url 'template_make_current' t.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-primary">Сделать текущим</button></form>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="6">Шаблонов нет.</td></tr>{% endfor %}</tbody></table>
+{% endblock %}

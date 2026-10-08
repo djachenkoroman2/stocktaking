@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}Объединение{% endblock %}
+{% block content %}
+<h1 class="h3">Объединение {{ kind }}: {{ main }}</h1>
+<p>Работы дубликата будут перенесены на основную запись «{{ main }}», дубликат станет неактивным. Действие записывается в историю и журнал аудита.</p>
+<form method="post" class="col-lg-6">{% csrf_token %}{% include 'includes/form_fields.html' %}
+  <button class="btn btn-warning" onclick="return confirm('Объединить записи?')">Объединить</button></form>
+{% endblock %}

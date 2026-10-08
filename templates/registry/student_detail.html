@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}{{ student }}{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+  <div><h1 class="h3 mb-0">{{ student.full_name }}</h1><div class="text-secondary">Группа {{ student.group }}{% if student.course %}, {{ student.course }} курс{% endif %}{% if student.category %}, {{ student.get_category_display|lower }}{% endif %}{% if not student.is_active %} · неактивен{% endif %}</div></div>
+  <div class="d-flex gap-2">
+    {% if can_edit %}<a class="btn btn-outline-primary" href="{% url 'student_edit' student.pk %}">Изменить</a>
+    {% if access.is_responsible %}<a class="btn btn-outline-secondary" href="{% url 'student_merge' student.pk %}">Объединить дубликат</a>{% endif %}{% endif %}
+    <a class="btn btn-link" href="{% url 'history' 'student' student.pk %}">История</a>
+  </div>
+</div>
+{% if show_contacts %}<table class="table table-sm"><tr><th class="field-label">Телефон</th><td>{{ student.phone }}</td></tr><tr><th class="field-label">Email</th><td>{{ student.email }}</td></tr></table>{% endif %}
+<h2 class="h5">Работы ({{ works|length }})</h2>
+<table class="table table-sm"><thead><tr><th>Преподаватель</th><th>Кафедра</th><th>Тема</th><th>Статус</th><th>Уч. год</th></tr></thead><tbody>
+{% for w in works %}<tr><td><a href="{% url 'work_detail' w.pk %}">{{ w.teacher.full_name }}</a></td><td>{{ w.teacher.department }}</td><td>{{ w.title|truncatechars:80 }}</td><td>{{ w.get_status_display }}</td><td>{{ w.academic_year }}</td></tr>
+{% empty %}<tr><td colspan="5">Нет работ.</td></tr>{% endfor %}</tbody></table>
+{% endblock %}

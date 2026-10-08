@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}{{ document.original_name }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'batch_detail' document.batch_id %}">← {{ document.batch }}</a></p>
+<div class="d-flex flex-wrap justify-content-between gap-2 mb-2">
+  <div><h1 class="h4 mb-0">{{ document.original_name }}</h1>
+    <div class="text-secondary small">Загружено {{ document.uploaded_at|date:'d.m.Y H:i' }} · {{ document.uploaded_by|default:'' }} · {{ document.size|filesizeformat }}
+      {% if document.questionnaire_id %} · ID анкеты {{ document.questionnaire_id }}{% endif %}
+      {% if document.form_id %} · {{ document.form_id }} {{ document.schema_version }}{% endif %}</div></div>
+  <div><span class="badge fs-6 text-bg-{% if document.state == 'saved' %}secondary{% elif document.state == 'pending' %}primary{% elif document.state == 'to_return' or document.state == 'returned' %}warning{% else %}danger{% endif %}">{% if ready %}Готово{% else %}{{ document.get_state_display }}{% endif %}</span>
+    {% if can_download and document.file %}<a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'document_download' document.pk %}">Скачать PDF</a>{% endif %}</div>
+</div>
+{% if document.work %}<div class="alert alert-secondary">Работа: <a href="{% url 'work_detail' document.work.pk %}">{{ document.work }}</a>{% if document.processed_by %} · сохранил {{ document.processed_by }} {{ document.processed_at|date:'d.m.Y H:i' }}{% endif %}</div>{% endif %}
+{% if document.duplicate_of %}<div class="alert alert-warning">Этот файл уже загружался: <a href="{% url 'document_detail' document.duplicate_of.pk %}">{{ document.duplicate_of.original_name }}</a> ({{ document.duplicate_of.get_state_display|lower }}).{% if document.duplicate_of.state == 'to_return' or document.duplicate_of.state == 'returned' %} Прежняя загрузка была возвращена — файл не исправлен.{% endif %}</div>{% endif %}
+{% if document.resubmission %}<div class="alert alert-info">Исправленная анкета прислана повторно: <a href="{% url 'document_detail' document.resubmission.pk %}">{{ document.resubmission.original_name }}</a> ({{ document.resubmission.get_state_display|lower }}).</div>{% endif %}
+{% if document.decision_note %}<div class="alert alert-light">Комментарий: {{ document.decision_note }}</div>{% endif %}
+
+{% if document.errors %}<div class="alert alert-danger"><strong>Ошибки:</strong><ul class="mb-0">{% for e in document.errors %}<li>{{ e }}</li>{% endfor %}</ul></div>{% endif %}
+{% if analysis.warnings %}<div class="alert alert-warning"><strong>Предупреждения:</strong><ul class="mb-0">{% for w in analysis.warnings %}<li>{{ w }}</li>{% endfor %}</ul></div>
+{% elif document.warnings %}<div class="alert alert-warning"><ul class="mb-0">{% for w in document.warnings %}<li>{{ w }}</li>{% endfor %}</ul></div>{% endif %}
+
+{% if document.state == 'to_return' or document.state == 'returned' %}
+<div class="card mb-3 border-warning"><div class="card-body">
+  <h2 class="h5">Возврат преподавателю</h2>
+  {% if document.state == 'returned' %}<p>Возвращено {{ document.returned_at|date:'d.m.Y H:i' }}, {{ document.returned_by|default:'' }}.</p>{% endif %}
+  <textarea id="return-text" class="form-control mb-2" rows="12" readonly>{{ document.return_message }}</textarea>
+  <div class="d-flex flex-wrap gap-2">
+    <button type="button" class="btn btn-outline-secondary" onclick="navigator.clipboard.writeText(document.getElementById('return-text').value); this.textContent='Скопировано';">Копировать текст</button>
+    <a class="btn btn-outline-secondary" href="{% url 'document_return_text' document.pk %}">Скачать .txt</a>
+    {% if document.state == 'to_return' %}<form method="post" action="{% url 'document_mark_returned' document.pk %}">{% csrf_token %}<button class="btn btn-warning">Отмечено как возвращённое</button></form>{% endif %}
+    {% if offer_copy %}<a class="btn btn-outline-primary" href="{% url 'copy_create' %}?replaces={{ document.pk }}">Подготовить новую копию формы</a>{% endif %}
+  </div>
+</div></div>
+{% endif %}
+{% if document.state == 'unsupported' or document.state == 'rejected_check' %}
+<form method="post" action="{% url 'document_reprocess' document.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-outline-primary">Обработать заново</button></form>
+{% endif %}
+{% if document.state == 'rejected_check' or document.state == 'rejected_user' or document.state == 'duplicate' %}
+<form method="post" action="{% url 'document_delete' document.pk %}" class="d-inline" onsubmit="return confirm('Удалить загрузку из журнала?')">{% csrf_token %}<button class="btn btn-outline-danger">Удалить из журнала</button></form>
+{% endif %}
+
+<div class="row g-4">
+{% if data %}
+<div class="{% if form %}col-xl-6{% else %}col-xl-9{% endif %}">
+  <h2 class="h5">Данные анкеты</h2>
+  <table class="table table-sm">
+    <tr><th class="field-label">Дата заполнения</th><td>{{ data.date_filled|date:'d.m.Y'|default:data.date_filled_raw|default:'—' }}</td></tr>
+    <tr><th class="field-label">Преподаватель</th><td>{{ data.teacher_full_name|default:'—' }}<div class="small-muted">{{ data.teacher_position }}{% if data.teacher_department %} · {{ data.teacher_department }}{% endif %}</div></td></tr>
+    <tr><th class="field-label">Студент</th><td>{{ data.last_name }} {{ data.first_name }} {{ data.middle_name }}</td></tr>
+    <tr><th class="field-label">Курс, группа</th><td>{{ data.course_raw|default:'—' }}, {{ data.group_code }}</td></tr>
+    <tr><th class="field-label">Телефон, email</th><td>{% if show_contacts %}{{ data.phone }} · {{ data.email }}{% else %}<span class="text-secondary">скрыто</span>{% endif %}</td></tr>
+    <tr><th class="field-label">Задача</th><td class="pre-wrap">{{ data.task }}</td></tr>
+    <tr><th class="field-label">Расписание</th><td class="pre-wrap">{{ data.schedule }}</td></tr>
+    <tr><th class="field-label">Ожидаемые результаты</th><td class="pre-wrap">{{ data.expected_results }}</td></tr>
+    <tr><th class="field-label">Текущий статус (текст)</th><td>{{ data.status_comment }}</td></tr>
+    <tr><th class="field-label">Достижения</th><td>{% for row, text in data.achievements %}<div>{{ row }}. {{ text }}</div>{% empty %}—{% endfor %}</td></tr>
+    <tr><th class="field-label">Примечание</th><td class="pre-wrap">{{ data.notes }}</td></tr>
+  </table>
+</div>
+{% endif %}
+{% if form %}
+<div class="col-xl-6">
+  <h2 class="h5">Решение</h2>
+  {% if analysis.reasons %}<div class="alert alert-primary"><ul class="mb-0">{% for r in analysis.reasons %}<li>{{ r }}</li>{% endfor %}</ul></div>{% endif %}
+  {% if analysis.notes %}<ul class="small-muted">{% for n in analysis.notes %}<li>{{ n }}</li>{% endfor %}</ul>{% endif %}
+  {% if analysis.teacher_source == 'work' or analysis.teacher_source == 'copy' %}
+  <p>Преподаватель: <strong>{{ analysis.teacher }}</strong> ({% if analysis.teacher_source == 'work' %}по ранее сохранённой работе{% else %}по выданной копии{% endif %}).</p>{% endif %}
+  {% if analysis.student_source == 'work' or analysis.student_source == 'copy' %}<p>Студент: <strong>{{ analysis.student }}</strong>.</p>{% endif %}
+  {% if analysis.work %}<p>Анкета уже загружалась: обновится работа <a href="{% url 'work_detail' analysis.work.pk %}">{{ analysis.work }}</a>.</p>{% endif %}
+  {% if analysis.student_diff %}<h3 class="h6">Изменения студента</h3><table class="table table-sm small">
+    {% for d in analysis.student_diff %}<tr><th>{{ d.label }}</th>{% if not show_contacts and d.field in 'phone email' %}<td colspan="2">изменено (скрыто)</td>{% else %}<td class="diff-old">{{ d.old|default_if_none:'' }}</td><td class="diff-new">{{ d.new|default_if_none:'' }}</td>{% endif %}</tr>{% endfor %}</table>{% endif %}
+  {% if analysis.work_diff %}<h3 class="h6">Изменения работы</h3><table class="table table-sm small">
+    {% for d in analysis.work_diff %}<tr><th>{{ d.label }}{% if d.manual %} <span class="badge text-bg-warning">изменено вручную</span>{% endif %}</th><td class="diff-old pre-wrap">{{ d.old|default_if_none:''|truncatechars:400 }}</td><td class="diff-new pre-wrap">{{ d.new|default_if_none:''|truncatechars:400 }}</td></tr>{% endfor %}</table>{% endif %}
+  {% if analysis.achievements_add or analysis.achievements_update %}<p class="small">Достижения: добавится {{ analysis.achievements_add|length }}, изменится {{ analysis.achievements_update|length }}.</p>{% endif %}
+  <form method="post">{% csrf_token %}
+    {% include 'includes/form_fields.html' %}
+    <button class="btn btn-success">Сохранить</button>
+  </form>
+  <hr>
+  <form method="post" action="{% url 'document_reject' document.pk %}">{% csrf_token %}
+    {% include 'includes/form_fields.html' with form=reject_form %}
+    <button class="btn btn-outline-danger">Отклонить</button>
+  </form>
+</div>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+.pre-wrap { white-space: pre-wrap; }
+.table td, .table th { vertical-align: top; }
+.field-label { color: var(--bs-secondary-color); width: 30%; }
+.diff-old { background: #fde2e2; }
+.diff-new { background: #e1f5e1; }
+.small-muted { font-size: .875em; color: var(--bs-secondary-color); }
+@media (max-width: 576px) { .field-label { width: auto; } }

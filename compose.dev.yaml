@@ -1,0 +1,24 @@
+# Разработка: docker compose -f compose.yaml -f compose.dev.yaml up
+# DEBUG, исходники с хоста, runserver на http://localhost:${DEV_PORT:-8000}, без nginx.
+services:
+  web:
+    environment:
+      POSTGRES_HOST: db
+      DJANGO_DEBUG: "1"
+    volumes:
+      - .:/app
+      - media:/data/media
+      - static:/data/static
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    ports:
+      - "${DEV_PORT:-8000}:8000"
+  worker:
+    environment:
+      POSTGRES_HOST: db
+      DJANGO_DEBUG: "1"
+      RUN_MIGRATIONS: "0"
+    volumes:
+      - .:/app
+      - media:/data/media
+  nginx:
+    profiles: ["prod"]

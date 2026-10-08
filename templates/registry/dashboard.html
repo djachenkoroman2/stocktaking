@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+<h1 class="h3">Сводка</h1>
+{% if no_role %}<div class="alert alert-warning">У вашей учётной записи нет ролей. Обратитесь к администратору.</div>{% endif %}
+<div class="row g-3 mb-4">
+  <div class="col-md-6 col-xl-4"><div class="card"><div class="card-body">
+    <h2 class="h6">Работы ({{ total_works }})</h2>
+    <ul class="list-unstyled mb-0">{% for s, n in status_counts %}
+      <li><a href="{% url 'work_list' %}?status={{ s.value }}">{{ s.label }}</a>: {{ n }}</li>{% endfor %}</ul>
+  </div></div></div>
+  {% if access.can_import %}
+  <div class="col-md-6 col-xl-4"><div class="card"><div class="card-body">
+    <h2 class="h6">Импорт анкет</h2>
+    <ul class="list-unstyled mb-2">
+      <li><a href="{% url 'document_list' %}?state=pending">Ожидают решения</a>: {{ pending }}</li>
+      <li><a href="{% url 'document_list' %}?state=to_return">К возврату</a>: {{ to_return }}</li>
+      <li><a href="{% url 'document_list' %}?state=returned">Возвращены, ждём исправленные</a>: {{ returned }}</li>
+      {% if queued %}<li>В очереди: {{ queued }}</li>{% endif %}
+    </ul>
+    <a class="btn btn-sm btn-primary" href="{% url 'import_upload' %}">Загрузить анкеты</a>
+  </div></div></div>
+  {% endif %}
+</div>
+<h2 class="h5">Последние изменения работ</h2>
+<table class="table table-sm"><tbody>
+{% for r in recent %}<tr><td>{{ r.history_date|date:'d.m.Y H:i' }}</td><td>{{ r.history_user|default:'' }}</td>
+  <td><a href="{% url 'work_detail' r.id %}">{{ r.instance }}</a></td><td>{{ r.history_change_reason|default:'' }}</td></tr>
+{% empty %}<tr><td>Изменений пока нет.</td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}

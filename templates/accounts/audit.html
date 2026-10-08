@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Журнал аудита{% endblock %}
+{% block content %}
+<h1 class="h3">Журнал аудита</h1>
+<form class="row g-2 mb-3">
+  <div class="col-auto"><select name="action" class="form-select"><option value="">Все действия</option>
+    {% for a in actions %}<option value="{{ a }}"{% if a == action %} selected{% endif %}>{{ a }}</option>{% endfor %}</select></div>
+  <div class="col-auto"><input name="username" value="{{ username }}" class="form-control" placeholder="Пользователь"></div>
+  <div class="col-auto"><button class="btn btn-outline-primary">Показать</button></div>
+</form>
+<div class="table-responsive"><table class="table table-sm">
+  <thead><tr><th>Время</th><th>Пользователь</th><th>Действие</th><th>Объект</th><th>Подробности</th><th>IP</th></tr></thead>
+  <tbody>{% for e in page %}<tr>
+    <td>{{ e.at|date:'d.m.Y H:i:s' }}</td><td>{{ e.username }}</td><td>{{ e.action }}</td>
+    <td>{{ e.object_type }} {{ e.object_id }}</td><td class="small">{{ e.details }}</td><td>{{ e.ip|default:'' }}</td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% include 'includes/pagination.html' %}
+{% endblock %}
