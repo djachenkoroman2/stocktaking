@@ -7,10 +7,11 @@ from django.db import close_old_connections, connection
 from django.utils import timezone
 
 from imports.processing import process_queue
+from snapshots.service import process_queue as process_exports
 
 
 class Command(BaseCommand):
-    help = 'Обрабатывает загрузки «В очереди»; раз в NOTIFY_PENDING_HOURS часов рассылает уведомления.'
+    help = 'Обрабатывает загрузки и выгрузки в JSON «В очереди»; раз в NOTIFY_PENDING_HOURS часов рассылает уведомления.'
 
     def add_arguments(self, parser):
         parser.add_argument('--once', action='store_true', help='Обработать очередь один раз и выйти.')
@@ -25,6 +26,9 @@ class Command(BaseCommand):
             done = process_queue()
             if done:
                 self.stdout.write(f'Обработано загрузок: {done}')
+            exports = process_exports()
+            if exports:
+                self.stdout.write(f'Выполнено выгрузок в JSON: {exports}')
             hours = settings.NOTIFY_PENDING_HOURS
             if hours and (last_notify is None or (timezone.now() - last_notify).total_seconds() >= hours * 3600):
                 call_command('notify_pending')

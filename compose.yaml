@@ -11,6 +11,7 @@ x-app: &app
   volumes:
     - media:/data/media
     - static:/data/static
+    - exports:/data/exports
   depends_on:
     db:
       condition: service_healthy
@@ -69,3 +70,4 @@ volumes:
   pgdata:
   media:
   static:
+  exports:

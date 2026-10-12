@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Выгрузка в JSON{% endblock %}
+{% block content %}
+<h1 class="h3">Выгрузка в JSON</h1>
+<p class="col-lg-8">Полный снимок базы: справочники, работы, история изменений, загрузки, выданные копии, пользователи и роли, журнал аудита. Нужен для переноса данных и переработки системы; для ежедневного резервного копирования используйте <code>scripts/backup.sh</code>. Формат описан в <code>doc/json-format.md</code>. Восстановление — только командой <code>restore_json</code> (руководство администратора).</p>
+<div class="alert alert-warning col-lg-8">Архив содержит персональные данные студентов (ФИО, телефоны, email) и хеши паролей пользователей. Храните и передавайте его так же, как резервные копии; ненужные архивы удаляйте с сервера.</div>
+<form method="post" class="mb-4">{% csrf_token %}
+  <div class="form-check mb-2">
+    <input class="form-check-input" type="checkbox" name="include_media" value="1" id="include_media">
+    <label class="form-check-label" for="include_media">Включить файлы: загруженные PDF, выданные копии, шаблоны формы (архив может быть большим, выгрузка идёт в фоне)</label>
+  </div>
+  <button class="btn btn-primary">Выгрузить</button>
+</form>
+<table class="table table-sm align-middle"><thead><tr><th>Запрошена</th><th>Кто</th><th>Состояние</th><th>Архив</th><th>Записей</th><th>Файлы</th><th>Размер</th><th></th></tr></thead><tbody>
+{% for job in jobs %}<tr>
+<td>{{ job.created_at|date:'d.m.Y H:i' }}</td><td>{{ job.created_by|default:'' }}</td>
+<td>{% if job.state == 'done' %}<span class="badge text-bg-success">{{ job.get_state_display }}</span>{% elif job.state == 'failed' %}<span class="badge text-bg-danger">{{ job.get_state_display }}</span>{% else %}<span class="badge text-bg-secondary">{{ job.get_state_display }}</span>{% endif %}
+{% if job.error %}<div class="small text-danger">{{ job.error }}</div>{% endif %}
+{% for warning in job.summary.warnings %}<div class="small text-warning-emphasis">{{ warning }}</div>{% endfor %}</td>
+<td class="small"><code>{{ job.file_name }}</code></td><td>{{ job.rows|default_if_none:'' }}</td>
+<td>{% if job.state == 'done' %}{% if job.include_media %}в архиве: {{ job.summary.media_files }}{% else %}не включены{% endif %}{% if job.summary.files_missing %}<div class="small text-warning-emphasis">нет на диске: {{ job.summary.files_missing }}</div>{% endif %}{% endif %}</td>
+<td>{% if job.size %}{{ job.size|filesizeformat }}{% endif %}</td>
+<td class="text-end text-nowrap">{% if job.state == 'done' %}<a class="btn btn-sm btn-outline-primary" href="{% url 'export_download' job.pk %}">Скачать</a>{% endif %}
+{% if not job.is_active %}<form method="post" action="{% url 'export_delete' job.pk %}" class="d-inline" onsubmit="return confirm('Удалить архив с сервера?');">{% csrf_token %}<button class="btn btn-sm btn-outline-danger">Удалить</button></form>{% endif %}</td>
+</tr>{% empty %}<tr><td colspan="8">Выгрузок ещё не было.</td></tr>{% endfor %}</tbody></table>
+{% endblock %}
+{% block scripts %}{% if refresh %}<script>setTimeout(function () { location.reload(); }, 5000);</script>{% endif %}{% endblock %}

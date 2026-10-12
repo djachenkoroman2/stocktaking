@@ -1,7 +1,7 @@
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 \
-    DJANGO_MEDIA_ROOT=/data/media DJANGO_STATIC_ROOT=/data/static
+    DJANGO_MEDIA_ROOT=/data/media DJANGO_STATIC_ROOT=/data/static DJANGO_EXPORT_ROOT=/data/exports
 
 # Библиотеки для WeasyPrint (PDF-отчёты) и шрифты с кириллицей.
 RUN apt-get update \
@@ -15,11 +15,11 @@ RUN pip install -r requirements.txt
 
 COPY . .
 RUN useradd --system --uid 1000 --home /app app \
- && mkdir -p /data/media /data/static && chown -R app /data \
+ && mkdir -p /data/media /data/static /data/exports && chown -R app /data \
  && chmod +x docker/entrypoint.sh
 USER app
 
 EXPOSE 8000
 ENTRYPOINT ["docker/entrypoint.sh"]
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "180", \
-     "--access-logfile", "-"]
+     "--access-logfile", "-", "--no-control-socket"]

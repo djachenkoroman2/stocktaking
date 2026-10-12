@@ -4,7 +4,10 @@ db.sqlite3
 media
 staticfiles
 backups
+exports
 docker/certs
 **/__pycache__
 .pytest_cache
 .git
+samples/valid-forms/*.pdf
+samples/valid-forms/*.zip

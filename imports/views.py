@@ -241,8 +241,8 @@ def document_delete(request, pk):
 def document_download(request, pk):
     access, document = _document(request, pk)
     access.require(access.can_download_document(document))
-    if not document.file:
-        raise Http404
+    if not document.file or not document.file.storage.exists(document.file.name):
+        raise Http404('Файла нет на сервере.')
     log(request, 'pdf_download', document)
     return FileResponse(document.file.open('rb'), as_attachment=True, filename=document.original_name,
                         content_type='application/pdf')
@@ -330,7 +330,7 @@ def _copies(request, ids):
 
 def copy_download(request, pk):
     found = _copies(request, [pk])
-    if not found:
+    if not found or not found[0].file.storage.exists(found[0].file.name):
         raise Http404
     return FileResponse(found[0].file.open('rb'), as_attachment=True, filename=found[0].download_name,
                         content_type='application/pdf')
@@ -341,7 +341,7 @@ def copy_download_zip(request):
         ids = [int(x) for x in request.GET.get('ids', '').split(',') if x]
     except ValueError:
         raise Http404
-    found = _copies(request, ids)
+    found = [c for c in _copies(request, ids) if c.file.storage.exists(c.file.name)]
     if not found:
         raise Http404
     response = HttpResponse(copy_service.zip_copies(found), content_type='application/zip')

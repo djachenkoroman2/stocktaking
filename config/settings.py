@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'imports',
     'reports',
     'api',
+    'snapshots',
 ]
 
 MIDDLEWARE = [
@@ -146,6 +147,11 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 DATA_UPLOAD_MAX_NUMBER_FILES = IMPORT_MAX_FILES + 10
 STALE_WORK_DAYS = env_int('STALE_WORK_DAYS', 90)
+
+# Выгрузка базы в JSON (snapshots): каталог готовых архивов — не публикуется и не входит в media.
+EXPORT_ROOT = Path(env('DJANGO_EXPORT_ROOT', BASE_DIR / 'exports'))
+# Выгрузка без файлов, в базе не больше стольких записей, — сразу в запросе; иначе — в фоне (worker).
+EXPORT_SYNC_ROWS = env_int('EXPORT_SYNC_ROWS', 5000)
 
 EMAIL_BACKEND = env('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend' if env('EMAIL_HOST')
                     else 'django.core.mail.backends.console.EmailBackend')

@@ -1,0 +1,1566 @@
+{
+  "auth.user": {
+    "title": "пользователи",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "password",
+        "type": "string",
+        "null": false,
+        "title": "пароль",
+        "max_length": 128
+      },
+      {
+        "name": "last_login",
+        "type": "datetime",
+        "null": true,
+        "title": "последний вход"
+      },
+      {
+        "name": "is_superuser",
+        "type": "boolean",
+        "null": false,
+        "title": "статус суперпользователя"
+      },
+      {
+        "name": "username",
+        "type": "string",
+        "null": false,
+        "title": "имя пользователя",
+        "unique": true,
+        "max_length": 150
+      },
+      {
+        "name": "first_name",
+        "type": "string",
+        "null": false,
+        "title": "имя",
+        "max_length": 150
+      },
+      {
+        "name": "last_name",
+        "type": "string",
+        "null": false,
+        "title": "фамилия",
+        "max_length": 150
+      },
+      {
+        "name": "email",
+        "type": "string",
+        "null": false,
+        "title": "адрес электронной почты",
+        "max_length": 254
+      },
+      {
+        "name": "is_staff",
+        "type": "boolean",
+        "null": false,
+        "title": "статус персонала"
+      },
+      {
+        "name": "is_active",
+        "type": "boolean",
+        "null": false,
+        "title": "активный"
+      },
+      {
+        "name": "date_joined",
+        "type": "datetime",
+        "null": false,
+        "title": "дата регистрации"
+      }
+    ]
+  },
+  "authtoken.token": {
+    "title": "Токены",
+    "fields": [
+      {
+        "name": "key",
+        "type": "string",
+        "null": false,
+        "title": "Ключ",
+        "primary_key": true,
+        "max_length": 40
+      },
+      {
+        "name": "user",
+        "type": "ref",
+        "null": false,
+        "title": "Пользователь",
+        "unique": true,
+        "ref": "auth.user"
+      },
+      {
+        "name": "created",
+        "type": "datetime",
+        "null": false,
+        "title": "Создано"
+      }
+    ]
+  },
+  "registry.department": {
+    "title": "кафедры",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "null": false,
+        "title": "название",
+        "max_length": 255
+      },
+      {
+        "name": "short_name",
+        "type": "string",
+        "null": false,
+        "title": "краткое название",
+        "max_length": 50
+      },
+      {
+        "name": "aliases",
+        "type": "json",
+        "null": false,
+        "title": "другие написания"
+      },
+      {
+        "name": "is_active",
+        "type": "boolean",
+        "null": false,
+        "title": "активна"
+      }
+    ]
+  },
+  "registry.studygroup": {
+    "title": "группы",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "code",
+        "type": "string",
+        "null": false,
+        "title": "шифр",
+        "max_length": 50
+      },
+      {
+        "name": "department",
+        "type": "ref",
+        "null": true,
+        "title": "выпускающая кафедра",
+        "ref": "registry.department"
+      },
+      {
+        "name": "is_active",
+        "type": "boolean",
+        "null": false,
+        "title": "активна"
+      }
+    ]
+  },
+  "registry.teacher": {
+    "title": "преподаватели",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "last_name",
+        "type": "string",
+        "null": false,
+        "title": "фамилия",
+        "max_length": 100
+      },
+      {
+        "name": "first_name",
+        "type": "string",
+        "null": false,
+        "title": "имя",
+        "max_length": 100
+      },
+      {
+        "name": "middle_name",
+        "type": "string",
+        "null": false,
+        "title": "отчество",
+        "max_length": 100
+      },
+      {
+        "name": "position",
+        "type": "string",
+        "null": false,
+        "title": "должность",
+        "max_length": 255
+      },
+      {
+        "name": "academic_degree",
+        "type": "string",
+        "null": false,
+        "title": "учёная степень",
+        "max_length": 100
+      },
+      {
+        "name": "academic_title",
+        "type": "string",
+        "null": false,
+        "title": "учёное звание",
+        "max_length": 100
+      },
+      {
+        "name": "department",
+        "type": "ref",
+        "null": false,
+        "title": "кафедра",
+        "ref": "registry.department"
+      },
+      {
+        "name": "email",
+        "type": "string",
+        "null": false,
+        "title": "email",
+        "max_length": 254
+      },
+      {
+        "name": "phone",
+        "type": "string",
+        "null": false,
+        "title": "телефон",
+        "max_length": 50
+      },
+      {
+        "name": "user",
+        "type": "ref",
+        "null": true,
+        "title": "учётная запись",
+        "unique": true,
+        "ref": "auth.user"
+      },
+      {
+        "name": "is_active",
+        "type": "boolean",
+        "null": false,
+        "title": "активен"
+      },
+      {
+        "name": "merged_into",
+        "type": "ref",
+        "null": true,
+        "title": "объединён с",
+        "ref": "registry.teacher"
+      }
+    ]
+  },
+  "registry.student": {
+    "title": "студенты (курсанты)",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "last_name",
+        "type": "string",
+        "null": false,
+        "title": "фамилия",
+        "max_length": 100
+      },
+      {
+        "name": "first_name",
+        "type": "string",
+        "null": false,
+        "title": "имя",
+        "max_length": 100
+      },
+      {
+        "name": "middle_name",
+        "type": "string",
+        "null": false,
+        "title": "отчество",
+        "max_length": 100
+      },
+      {
+        "name": "category",
+        "type": "string",
+        "null": false,
+        "title": "категория",
+        "max_length": 10,
+        "choices": {
+          "student": "Студент",
+          "cadet": "Курсант"
+        }
+      },
+      {
+        "name": "course",
+        "type": "integer",
+        "null": true,
+        "title": "курс"
+      },
+      {
+        "name": "group",
+        "type": "ref",
+        "null": false,
+        "title": "группа",
+        "ref": "registry.studygroup"
+      },
+      {
+        "name": "phone",
+        "type": "string",
+        "null": false,
+        "title": "телефон",
+        "max_length": 50
+      },
+      {
+        "name": "email",
+        "type": "string",
+        "null": false,
+        "title": "email",
+        "max_length": 254
+      },
+      {
+        "name": "is_active",
+        "type": "boolean",
+        "null": false,
+        "title": "активен"
+      },
+      {
+        "name": "merged_into",
+        "type": "ref",
+        "null": true,
+        "title": "объединён с",
+        "ref": "registry.student"
+      }
+    ]
+  },
+  "registry.researchwork": {
+    "title": "работы",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "questionnaire_id",
+        "type": "string",
+        "null": true,
+        "title": "ID анкеты",
+        "unique": true,
+        "max_length": 100
+      },
+      {
+        "name": "teacher",
+        "type": "ref",
+        "null": false,
+        "title": "преподаватель",
+        "ref": "registry.teacher"
+      },
+      {
+        "name": "student",
+        "type": "ref",
+        "null": false,
+        "title": "студент",
+        "ref": "registry.student"
+      },
+      {
+        "name": "task",
+        "type": "string",
+        "null": false,
+        "title": "задача"
+      },
+      {
+        "name": "schedule",
+        "type": "string",
+        "null": false,
+        "title": "расписание"
+      },
+      {
+        "name": "expected_results",
+        "type": "string",
+        "null": false,
+        "title": "ожидаемые результаты"
+      },
+      {
+        "name": "status",
+        "type": "string",
+        "null": false,
+        "title": "статус",
+        "max_length": 20,
+        "choices": {
+          "planned": "Планируется",
+          "in_progress": "В работе",
+          "suspended": "Приостановлена",
+          "completed": "Завершена",
+          "terminated": "Прекращена"
+        }
+      },
+      {
+        "name": "status_comment",
+        "type": "string",
+        "null": false,
+        "title": "комментарий к статусу",
+        "max_length": 500
+      },
+      {
+        "name": "course_at_filling",
+        "type": "string",
+        "null": false,
+        "title": "курс по анкете",
+        "max_length": 20
+      },
+      {
+        "name": "date_filled",
+        "type": "date",
+        "null": true,
+        "title": "дата заполнения"
+      },
+      {
+        "name": "academic_year",
+        "type": "string",
+        "null": false,
+        "title": "учебный год",
+        "max_length": 9
+      },
+      {
+        "name": "notes",
+        "type": "string",
+        "null": false,
+        "title": "примечание"
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "null": false,
+        "title": "источник",
+        "max_length": 10,
+        "choices": {
+          "manual": "Вручную",
+          "pdf": "PDF-анкета"
+        }
+      },
+      {
+        "name": "last_import_snapshot",
+        "type": "json",
+        "null": false,
+        "title": "значения последнего импорта"
+      },
+      {
+        "name": "is_deleted",
+        "type": "boolean",
+        "null": false,
+        "title": "удалена"
+      },
+      {
+        "name": "deleted_at",
+        "type": "datetime",
+        "null": true,
+        "title": "удалена"
+      },
+      {
+        "name": "created_at",
+        "type": "datetime",
+        "null": false,
+        "title": "создана"
+      },
+      {
+        "name": "updated_at",
+        "type": "datetime",
+        "null": false,
+        "title": "изменена"
+      },
+      {
+        "name": "created_by",
+        "type": "ref",
+        "null": true,
+        "title": "created by",
+        "ref": "auth.user"
+      },
+      {
+        "name": "updated_by",
+        "type": "ref",
+        "null": true,
+        "title": "updated by",
+        "ref": "auth.user"
+      }
+    ]
+  },
+  "registry.achievement": {
+    "title": "достижения",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "work",
+        "type": "ref",
+        "null": false,
+        "title": "работа",
+        "ref": "registry.researchwork"
+      },
+      {
+        "name": "text",
+        "type": "string",
+        "null": false,
+        "title": "достижение"
+      },
+      {
+        "name": "source_row",
+        "type": "integer",
+        "null": true,
+        "title": "строка анкеты"
+      },
+      {
+        "name": "order",
+        "type": "integer",
+        "null": false,
+        "title": "порядок"
+      }
+    ]
+  },
+  "accounts.roleassignment": {
+    "title": "роли",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "user",
+        "type": "ref",
+        "null": false,
+        "title": "пользователь",
+        "ref": "auth.user"
+      },
+      {
+        "name": "role",
+        "type": "string",
+        "null": false,
+        "title": "роль",
+        "max_length": 20,
+        "choices": {
+          "admin": "Администратор",
+          "responsible": "Ответственный кафедры",
+          "observer": "Наблюдатель"
+        }
+      },
+      {
+        "name": "department",
+        "type": "ref",
+        "null": true,
+        "title": "кафедра",
+        "ref": "registry.department"
+      }
+    ]
+  },
+  "accounts.auditevent": {
+    "title": "журнал аудита",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "at",
+        "type": "datetime",
+        "null": false,
+        "title": "время"
+      },
+      {
+        "name": "user",
+        "type": "ref",
+        "null": true,
+        "title": "пользователь",
+        "ref": "auth.user"
+      },
+      {
+        "name": "username",
+        "type": "string",
+        "null": false,
+        "title": "имя входа",
+        "max_length": 150
+      },
+      {
+        "name": "action",
+        "type": "string",
+        "null": false,
+        "title": "действие",
+        "max_length": 50
+      },
+      {
+        "name": "object_type",
+        "type": "string",
+        "null": false,
+        "title": "объект",
+        "max_length": 50
+      },
+      {
+        "name": "object_id",
+        "type": "string",
+        "null": false,
+        "title": "ID объекта",
+        "max_length": 100
+      },
+      {
+        "name": "details",
+        "type": "json",
+        "null": false,
+        "title": "подробности"
+      },
+      {
+        "name": "ip",
+        "type": "string",
+        "null": true,
+        "title": "IP"
+      }
+    ]
+  },
+  "imports.formtemplate": {
+    "title": "шаблоны формы",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "file",
+        "type": "file",
+        "null": false,
+        "title": "файл"
+      },
+      {
+        "name": "original_name",
+        "type": "string",
+        "null": false,
+        "title": "имя файла",
+        "max_length": 255
+      },
+      {
+        "name": "sha256",
+        "type": "string",
+        "null": false,
+        "title": "SHA-256",
+        "max_length": 64
+      },
+      {
+        "name": "form_id",
+        "type": "string",
+        "null": false,
+        "title": "форма",
+        "max_length": 100
+      },
+      {
+        "name": "schema_version",
+        "type": "string",
+        "null": false,
+        "title": "версия схемы",
+        "max_length": 20
+      },
+      {
+        "name": "is_current",
+        "type": "boolean",
+        "null": false,
+        "title": "текущий"
+      },
+      {
+        "name": "uploaded_by",
+        "type": "ref",
+        "null": true,
+        "title": "uploaded by",
+        "ref": "auth.user"
+      },
+      {
+        "name": "uploaded_at",
+        "type": "datetime",
+        "null": false,
+        "title": "загружен"
+      }
+    ]
+  },
+  "imports.importbatch": {
+    "title": "пакеты импорта",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "created_by",
+        "type": "ref",
+        "null": true,
+        "title": "автор",
+        "ref": "auth.user"
+      },
+      {
+        "name": "created_at",
+        "type": "datetime",
+        "null": false,
+        "title": "создан"
+      },
+      {
+        "name": "background",
+        "type": "boolean",
+        "null": false,
+        "title": "фоновая обработка"
+      }
+    ]
+  },
+  "imports.importeddocument": {
+    "title": "загрузки PDF",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "batch",
+        "type": "ref",
+        "null": false,
+        "title": "пакет",
+        "ref": "imports.importbatch"
+      },
+      {
+        "name": "file",
+        "type": "file",
+        "null": false,
+        "title": "файл"
+      },
+      {
+        "name": "file_purged_at",
+        "type": "datetime",
+        "null": true,
+        "title": "файл удалён"
+      },
+      {
+        "name": "original_name",
+        "type": "string",
+        "null": false,
+        "title": "имя файла",
+        "max_length": 255
+      },
+      {
+        "name": "size",
+        "type": "integer",
+        "null": false,
+        "title": "размер"
+      },
+      {
+        "name": "sha256",
+        "type": "string",
+        "null": false,
+        "title": "SHA-256",
+        "max_length": 64
+      },
+      {
+        "name": "form_id",
+        "type": "string",
+        "null": false,
+        "title": "форма",
+        "max_length": 100
+      },
+      {
+        "name": "schema_version",
+        "type": "string",
+        "null": false,
+        "title": "версия схемы",
+        "max_length": 20
+      },
+      {
+        "name": "questionnaire_id",
+        "type": "string",
+        "null": false,
+        "title": "ID анкеты",
+        "max_length": 100
+      },
+      {
+        "name": "student_name",
+        "type": "string",
+        "null": false,
+        "title": "студент по анкете",
+        "max_length": 300
+      },
+      {
+        "name": "teacher_name",
+        "type": "string",
+        "null": false,
+        "title": "преподаватель по анкете",
+        "max_length": 300
+      },
+      {
+        "name": "extracted",
+        "type": "json",
+        "null": true,
+        "title": "извлечённые данные"
+      },
+      {
+        "name": "errors",
+        "type": "json",
+        "null": false,
+        "title": "ошибки"
+      },
+      {
+        "name": "warnings",
+        "type": "json",
+        "null": false,
+        "title": "предупреждения"
+      },
+      {
+        "name": "state",
+        "type": "string",
+        "null": false,
+        "title": "состояние",
+        "max_length": 20,
+        "choices": {
+          "queued": "В очереди",
+          "pending": "Ожидает решения",
+          "saved": "Сохранено",
+          "to_return": "К возврату",
+          "returned": "Возвращено преподавателю",
+          "unsupported": "Версия не поддерживается",
+          "rejected_check": "Отклонено проверкой",
+          "rejected_user": "Отклонено пользователем",
+          "duplicate": "Дубликат файла"
+        }
+      },
+      {
+        "name": "department",
+        "type": "ref",
+        "null": true,
+        "title": "кафедра",
+        "ref": "registry.department"
+      },
+      {
+        "name": "work",
+        "type": "ref",
+        "null": true,
+        "title": "работа",
+        "ref": "registry.researchwork"
+      },
+      {
+        "name": "duplicate_of",
+        "type": "ref",
+        "null": true,
+        "title": "дубликат загрузки",
+        "ref": "imports.importeddocument"
+      },
+      {
+        "name": "decision_note",
+        "type": "string",
+        "null": false,
+        "title": "комментарий решения"
+      },
+      {
+        "name": "return_message",
+        "type": "string",
+        "null": false,
+        "title": "текст возврата"
+      },
+      {
+        "name": "returned_by",
+        "type": "ref",
+        "null": true,
+        "title": "вернул",
+        "ref": "auth.user"
+      },
+      {
+        "name": "returned_at",
+        "type": "datetime",
+        "null": true,
+        "title": "возвращено"
+      },
+      {
+        "name": "resubmission",
+        "type": "ref",
+        "null": true,
+        "title": "повторно прислана",
+        "ref": "imports.importeddocument"
+      },
+      {
+        "name": "uploaded_by",
+        "type": "ref",
+        "null": true,
+        "title": "загрузил",
+        "ref": "auth.user"
+      },
+      {
+        "name": "uploaded_at",
+        "type": "datetime",
+        "null": false,
+        "title": "загружено"
+      },
+      {
+        "name": "processed_by",
+        "type": "ref",
+        "null": true,
+        "title": "решение принял",
+        "ref": "auth.user"
+      },
+      {
+        "name": "processed_at",
+        "type": "datetime",
+        "null": true,
+        "title": "решение принято"
+      },
+      {
+        "name": "processing_error",
+        "type": "string",
+        "null": false,
+        "title": "ошибка обработки"
+      }
+    ]
+  },
+  "imports.issuedcopy": {
+    "title": "выданные копии",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID",
+        "primary_key": true
+      },
+      {
+        "name": "questionnaire_id",
+        "type": "string",
+        "null": false,
+        "title": "ID анкеты",
+        "unique": true,
+        "max_length": 100
+      },
+      {
+        "name": "teacher",
+        "type": "ref",
+        "null": false,
+        "title": "преподаватель",
+        "ref": "registry.teacher"
+      },
+      {
+        "name": "student",
+        "type": "ref",
+        "null": true,
+        "title": "студент",
+        "ref": "registry.student"
+      },
+      {
+        "name": "work",
+        "type": "ref",
+        "null": true,
+        "title": "работа",
+        "ref": "registry.researchwork"
+      },
+      {
+        "name": "form_template",
+        "type": "ref",
+        "null": false,
+        "title": "шаблон",
+        "ref": "imports.formtemplate"
+      },
+      {
+        "name": "form_file_sha256",
+        "type": "string",
+        "null": false,
+        "title": "SHA-256 шаблона",
+        "max_length": 64
+      },
+      {
+        "name": "file",
+        "type": "file",
+        "null": false,
+        "title": "файл"
+      },
+      {
+        "name": "replaces_document",
+        "type": "ref",
+        "null": true,
+        "title": "взамен загрузки",
+        "ref": "imports.importeddocument"
+      },
+      {
+        "name": "issued_by",
+        "type": "ref",
+        "null": true,
+        "title": "выдал",
+        "ref": "auth.user"
+      },
+      {
+        "name": "issued_at",
+        "type": "datetime",
+        "null": false,
+        "title": "выдана"
+      }
+    ]
+  },
+  "registry.historicalteacher": {
+    "title": "historical преподаватели",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID"
+      },
+      {
+        "name": "last_name",
+        "type": "string",
+        "null": false,
+        "title": "фамилия",
+        "max_length": 100
+      },
+      {
+        "name": "first_name",
+        "type": "string",
+        "null": false,
+        "title": "имя",
+        "max_length": 100
+      },
+      {
+        "name": "middle_name",
+        "type": "string",
+        "null": false,
+        "title": "отчество",
+        "max_length": 100
+      },
+      {
+        "name": "position",
+        "type": "string",
+        "null": false,
+        "title": "должность",
+        "max_length": 255
+      },
+      {
+        "name": "academic_degree",
+        "type": "string",
+        "null": false,
+        "title": "учёная степень",
+        "max_length": 100
+      },
+      {
+        "name": "academic_title",
+        "type": "string",
+        "null": false,
+        "title": "учёное звание",
+        "max_length": 100
+      },
+      {
+        "name": "email",
+        "type": "string",
+        "null": false,
+        "title": "email",
+        "max_length": 254
+      },
+      {
+        "name": "phone",
+        "type": "string",
+        "null": false,
+        "title": "телефон",
+        "max_length": 50
+      },
+      {
+        "name": "is_active",
+        "type": "boolean",
+        "null": false,
+        "title": "активен"
+      },
+      {
+        "name": "department",
+        "type": "ref",
+        "null": true,
+        "title": "кафедра",
+        "ref": "registry.department",
+        "weak": true
+      },
+      {
+        "name": "user",
+        "type": "ref",
+        "null": true,
+        "title": "учётная запись",
+        "ref": "auth.user",
+        "weak": true
+      },
+      {
+        "name": "merged_into",
+        "type": "ref",
+        "null": true,
+        "title": "объединён с",
+        "ref": "registry.teacher",
+        "weak": true
+      },
+      {
+        "name": "history_id",
+        "type": "integer",
+        "null": false,
+        "title": "history id",
+        "primary_key": true
+      },
+      {
+        "name": "history_date",
+        "type": "datetime",
+        "null": false,
+        "title": "history date"
+      },
+      {
+        "name": "history_change_reason",
+        "type": "string",
+        "null": true,
+        "title": "history change reason",
+        "max_length": 100
+      },
+      {
+        "name": "history_type",
+        "type": "string",
+        "null": false,
+        "title": "history type",
+        "max_length": 1,
+        "choices": {
+          "+": "Создано",
+          "~": "Изменено",
+          "-": "Удалено"
+        }
+      },
+      {
+        "name": "history_user",
+        "type": "ref",
+        "null": true,
+        "title": "history user",
+        "ref": "auth.user"
+      }
+    ]
+  },
+  "registry.historicalstudent": {
+    "title": "historical студенты (курсанты)",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID"
+      },
+      {
+        "name": "last_name",
+        "type": "string",
+        "null": false,
+        "title": "фамилия",
+        "max_length": 100
+      },
+      {
+        "name": "first_name",
+        "type": "string",
+        "null": false,
+        "title": "имя",
+        "max_length": 100
+      },
+      {
+        "name": "middle_name",
+        "type": "string",
+        "null": false,
+        "title": "отчество",
+        "max_length": 100
+      },
+      {
+        "name": "category",
+        "type": "string",
+        "null": false,
+        "title": "категория",
+        "max_length": 10,
+        "choices": {
+          "student": "Студент",
+          "cadet": "Курсант"
+        }
+      },
+      {
+        "name": "course",
+        "type": "integer",
+        "null": true,
+        "title": "курс"
+      },
+      {
+        "name": "phone",
+        "type": "string",
+        "null": false,
+        "title": "телефон",
+        "max_length": 50
+      },
+      {
+        "name": "email",
+        "type": "string",
+        "null": false,
+        "title": "email",
+        "max_length": 254
+      },
+      {
+        "name": "is_active",
+        "type": "boolean",
+        "null": false,
+        "title": "активен"
+      },
+      {
+        "name": "group",
+        "type": "ref",
+        "null": true,
+        "title": "группа",
+        "ref": "registry.studygroup",
+        "weak": true
+      },
+      {
+        "name": "merged_into",
+        "type": "ref",
+        "null": true,
+        "title": "объединён с",
+        "ref": "registry.student",
+        "weak": true
+      },
+      {
+        "name": "history_id",
+        "type": "integer",
+        "null": false,
+        "title": "history id",
+        "primary_key": true
+      },
+      {
+        "name": "history_date",
+        "type": "datetime",
+        "null": false,
+        "title": "history date"
+      },
+      {
+        "name": "history_change_reason",
+        "type": "string",
+        "null": true,
+        "title": "history change reason",
+        "max_length": 100
+      },
+      {
+        "name": "history_type",
+        "type": "string",
+        "null": false,
+        "title": "history type",
+        "max_length": 1,
+        "choices": {
+          "+": "Создано",
+          "~": "Изменено",
+          "-": "Удалено"
+        }
+      },
+      {
+        "name": "history_user",
+        "type": "ref",
+        "null": true,
+        "title": "history user",
+        "ref": "auth.user"
+      }
+    ]
+  },
+  "registry.historicalresearchwork": {
+    "title": "historical работы",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID"
+      },
+      {
+        "name": "questionnaire_id",
+        "type": "string",
+        "null": true,
+        "title": "ID анкеты",
+        "max_length": 100
+      },
+      {
+        "name": "task",
+        "type": "string",
+        "null": false,
+        "title": "задача"
+      },
+      {
+        "name": "schedule",
+        "type": "string",
+        "null": false,
+        "title": "расписание"
+      },
+      {
+        "name": "expected_results",
+        "type": "string",
+        "null": false,
+        "title": "ожидаемые результаты"
+      },
+      {
+        "name": "status",
+        "type": "string",
+        "null": false,
+        "title": "статус",
+        "max_length": 20,
+        "choices": {
+          "planned": "Планируется",
+          "in_progress": "В работе",
+          "suspended": "Приостановлена",
+          "completed": "Завершена",
+          "terminated": "Прекращена"
+        }
+      },
+      {
+        "name": "status_comment",
+        "type": "string",
+        "null": false,
+        "title": "комментарий к статусу",
+        "max_length": 500
+      },
+      {
+        "name": "course_at_filling",
+        "type": "string",
+        "null": false,
+        "title": "курс по анкете",
+        "max_length": 20
+      },
+      {
+        "name": "date_filled",
+        "type": "date",
+        "null": true,
+        "title": "дата заполнения"
+      },
+      {
+        "name": "academic_year",
+        "type": "string",
+        "null": false,
+        "title": "учебный год",
+        "max_length": 9
+      },
+      {
+        "name": "notes",
+        "type": "string",
+        "null": false,
+        "title": "примечание"
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "null": false,
+        "title": "источник",
+        "max_length": 10,
+        "choices": {
+          "manual": "Вручную",
+          "pdf": "PDF-анкета"
+        }
+      },
+      {
+        "name": "last_import_snapshot",
+        "type": "json",
+        "null": false,
+        "title": "значения последнего импорта"
+      },
+      {
+        "name": "is_deleted",
+        "type": "boolean",
+        "null": false,
+        "title": "удалена"
+      },
+      {
+        "name": "deleted_at",
+        "type": "datetime",
+        "null": true,
+        "title": "удалена"
+      },
+      {
+        "name": "created_at",
+        "type": "datetime",
+        "null": false,
+        "title": "создана"
+      },
+      {
+        "name": "updated_at",
+        "type": "datetime",
+        "null": false,
+        "title": "изменена"
+      },
+      {
+        "name": "teacher",
+        "type": "ref",
+        "null": true,
+        "title": "преподаватель",
+        "ref": "registry.teacher",
+        "weak": true
+      },
+      {
+        "name": "student",
+        "type": "ref",
+        "null": true,
+        "title": "студент",
+        "ref": "registry.student",
+        "weak": true
+      },
+      {
+        "name": "created_by",
+        "type": "ref",
+        "null": true,
+        "title": "created by",
+        "ref": "auth.user",
+        "weak": true
+      },
+      {
+        "name": "updated_by",
+        "type": "ref",
+        "null": true,
+        "title": "updated by",
+        "ref": "auth.user",
+        "weak": true
+      },
+      {
+        "name": "history_id",
+        "type": "integer",
+        "null": false,
+        "title": "history id",
+        "primary_key": true
+      },
+      {
+        "name": "history_date",
+        "type": "datetime",
+        "null": false,
+        "title": "history date"
+      },
+      {
+        "name": "history_change_reason",
+        "type": "string",
+        "null": true,
+        "title": "history change reason",
+        "max_length": 100
+      },
+      {
+        "name": "history_type",
+        "type": "string",
+        "null": false,
+        "title": "history type",
+        "max_length": 1,
+        "choices": {
+          "+": "Создано",
+          "~": "Изменено",
+          "-": "Удалено"
+        }
+      },
+      {
+        "name": "history_user",
+        "type": "ref",
+        "null": true,
+        "title": "history user",
+        "ref": "auth.user"
+      }
+    ]
+  },
+  "registry.historicalachievement": {
+    "title": "historical достижения",
+    "fields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "null": false,
+        "title": "ID"
+      },
+      {
+        "name": "text",
+        "type": "string",
+        "null": false,
+        "title": "достижение"
+      },
+      {
+        "name": "source_row",
+        "type": "integer",
+        "null": true,
+        "title": "строка анкеты"
+      },
+      {
+        "name": "order",
+        "type": "integer",
+        "null": false,
+        "title": "порядок"
+      },
+      {
+        "name": "work",
+        "type": "ref",
+        "null": true,
+        "title": "работа",
+        "ref": "registry.researchwork",
+        "weak": true
+      },
+      {
+        "name": "history_id",
+        "type": "integer",
+        "null": false,
+        "title": "history id",
+        "primary_key": true
+      },
+      {
+        "name": "history_date",
+        "type": "datetime",
+        "null": false,
+        "title": "history date"
+      },
+      {
+        "name": "history_change_reason",
+        "type": "string",
+        "null": true,
+        "title": "history change reason",
+        "max_length": 100
+      },
+      {
+        "name": "history_type",
+        "type": "string",
+        "null": false,
+        "title": "history type",
+        "max_length": 1,
+        "choices": {
+          "+": "Создано",
+          "~": "Изменено",
+          "-": "Удалено"
+        }
+      },
+      {
+        "name": "history_user",
+        "type": "ref",
+        "null": true,
+        "title": "history user",
+        "ref": "auth.user"
+      }
+    ]
+  }
+}

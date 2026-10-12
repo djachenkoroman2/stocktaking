@@ -48,6 +48,7 @@
           <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Администрирование</a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="{% url 'audit' %}">Журнал аудита</a></li>
+            {% if user.is_superuser %}<li><a class="dropdown-item" href="{% url 'export_list' %}">Выгрузка в JSON</a></li>{% endif %}
             <li><a class="dropdown-item" href="{% url 'admin:index' %}">Пользователи, роли, настройки</a></li>
           </ul>
         </li>

@@ -12,6 +12,7 @@ urlpatterns = [
     path('imports/', include('imports.urls')),
     path('reports/', include('reports.urls')),
     path('api/', include('api.urls')),
+    path('export/', include('snapshots.urls')),
     path('admin/', admin.site.urls),
     path('', include('registry.urls')),
 ]
