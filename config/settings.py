@@ -37,7 +37,7 @@ ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1')
 CSRF_TRUSTED_ORIGINS = env_list('DJANGO_CSRF_TRUSTED_ORIGINS')
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    'accounts.apps.SystemAdminConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
     'accounts.middleware.LoginRequiredMiddleware',
+    'accounts.middleware.SwitchUserFallbackMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -105,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend', 'accounts.backends.RoleAdminBackend']
 LDAP = {
     'ENABLED': env_bool('LDAP_ENABLED', False),
     'SERVER_URI': env('LDAP_SERVER_URI', ''),

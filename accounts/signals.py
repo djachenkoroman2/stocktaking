@@ -12,4 +12,5 @@ def on_login(sender, request, user, **kwargs):
 @receiver(user_logged_out)
 def on_logout(sender, request, user, **kwargs):
     if user is not None:
-        log(request, 'logout', user=user)
+        details = {'switch_user': True} if getattr(request, 'switch_user', False) else {}
+        log(request, 'logout', user=user, **details)

@@ -49,7 +49,7 @@
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="{% url 'audit' %}">Журнал аудита</a></li>
             {% if user.is_superuser %}<li><a class="dropdown-item" href="{% url 'export_list' %}">Выгрузка в JSON</a></li>{% endif %}
-            <li><a class="dropdown-item" href="{% url 'admin:index' %}">Пользователи, роли, настройки</a></li>
+            <li><a class="dropdown-item" href="{% url 'admin:index' %}">Админка Django: пользователи, роли, настройки</a></li>
           </ul>
         </li>
         {% endif %}
@@ -59,6 +59,8 @@
           <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{{ user.get_full_name|default:user.username }}</a>
           <ul class="dropdown-menu dropdown-menu-end">
             {% if user.has_usable_password %}<li><a class="dropdown-item" href="{% url 'password_change' %}">Сменить пароль</a></li>{% endif %}
+            <li><form method="post" action="{% url 'switch_user' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button class="dropdown-item">Сменить пользователя</button></form></li>
+            <li><hr class="dropdown-divider"></li>
             <li><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="dropdown-item">Выйти</button></form></li>
           </ul>
         </li>

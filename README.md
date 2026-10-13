@@ -19,7 +19,7 @@ docker compose up -d --build
 
 Дальше администратор:
 
-1. «Администрирование → Пользователи, роли» — создать кафедры и пользователей, назначить роли (ответственный кафедры, наблюдатель) и связать учётные записи преподавателей с карточками преподавателей.
+1. «Администрирование → Админка Django: пользователи, роли, настройки» — создать кафедры и пользователей, назначить роли (ответственный кафедры, наблюдатель) и связать учётные записи преподавателей с карточками преподавателей.
 2. «Импорт → Шаблон формы» — загрузить пустую форму (`prepod_vnok_info-v2.0-draft04.pdf`), чтобы ответственные могли готовить копии.
 
 ## Состав
@@ -47,7 +47,7 @@ uv venv .venv --python 3.12 && uv pip install -p .venv/bin/python -r requirement
 DJANGO_DEBUG=1 .venv/bin/python manage.py migrate
 DJANGO_DEBUG=1 .venv/bin/python manage.py createsuperuser
 DJANGO_DEBUG=1 .venv/bin/python manage.py runserver
-.venv/bin/pytest                      # 82 теста; без POSTGRES_HOST — на SQLite
+.venv/bin/pytest                      # 105 тестов; без POSTGRES_HOST — на SQLite
 ```
 
 Без `POSTGRES_HOST` приложение использует SQLite (только для разработки и тестов). Разработка в Docker: `docker compose -f compose.yaml -f compose.dev.yaml up` — runserver на `http://localhost:8000`, без nginx.
